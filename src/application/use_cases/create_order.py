@@ -15,15 +15,15 @@ class CreateOrder:
     async def execute(self, order: OrderCreateDTO) -> OrderReadDTO:
 
         async with self._uow.init() as repo:
-            key = uuid4()
-            result = await repo.orders.check_idempotency_key(key)
+
+            result = await repo.orders.check_idempotency_key(order.idempotency_key)
             if result:
                 raise IdempotencyConflictError
             is_available = await self._catalog.check_available_qty(
                 item_id=order.item_id, quantity=order.quantity
             )
             if is_available:
-                new_order_orm = await repo.orders.create(order, key)
+                new_order_orm = await repo.orders.create(order)
                 return OrderReadDTO.model_validate(new_order_orm)
             else:
                 raise IsAvailableQtyError
