@@ -58,28 +58,15 @@ jobs:
     steps:
       - name: Send deploy request
         run: |
-          # 1. Готовим правильное имя: заменяем / на _ (Leshik1305_order-service)
-          LMS_REPOSITORY_NAME=$(echo "${{ github.repository }}" | sed 's/\//_/g')
-          
-          # 2. Формируем тег образа
-          IMAGE_TAG="ghcr.io/${{ needs.build.outputs.repo }}:${{ github.sha }}"
-
-          echo "🚀 Deploying image: $IMAGE_TAG"
-          echo "🎯 Target repository in LMS: $LMS_REPOSITORY_NAME"
-          
-          # 3. КРИТИЧЕСКИЙ МОМЕНТ: Используем ДВОЙНЫЕ кавычки для -d и экранируем внутренние кавычки.
-          # Это позволит Bash подставить значения переменных в JSON.
           HTTP_CODE=$(curl -s -o response.txt -w "%{http_code}" -X POST \
             -H "Content-Type: application/json" \
             -H "X-API-Key: ${{ secrets.LMS_API_KEY }}" \
-            -d "{\"image\":\"$IMAGE_TAG\",\"repository\":\"$LMS_REPOSITORY_NAME\"}" \
+            -d '{"image":"ghcr.io/${{ needs.build.outputs.repo }}:${{ github.sha }}","repository":"${{ github.repository }}"}' \
             https://lms.python-labs.ru/api/deploy-requests)
 
           if [ "$HTTP_CODE" != "200" ]; then
-            echo "❌ Deployment failed with status code $HTTP_CODE"
+            echo "Deployment failed with status code $HTTP_CODE"
             echo "Response body:"
             cat response.txt
             exit 1
-          else
-            echo "✅ Deployment successful!"
           fi
