@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    APP_PORT: int
+    APP_PORT: int = 8000
     POSTGRES_CONNECTION_STRING: str
     BASE_URL: Optional[str] = "http://localhost"
     API_KEY: Optional[str] = "default_key"
