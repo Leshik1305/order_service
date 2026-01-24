@@ -11,6 +11,7 @@ class OrderDTO(BaseModel):
     id: UUID
     item_id: UUID
     quantity: int
+    amount: Decimal
     idempotency_key: UUID
     status: OrderStatusEnum
     created_at: datetime
@@ -28,6 +29,7 @@ class OrderReadDTO(BaseModel):
     item_id: UUID
     quantity: int
     status: OrderStatusEnum
+    amount: Decimal
     created_at: datetime
     update_at: datetime
 

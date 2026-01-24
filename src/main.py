@@ -14,7 +14,8 @@ def create_container() -> Container:
 
 def create_app() -> fastapi.FastAPI:
     app = fastapi.FastAPI()
-    app.container = create_container()  # type: ignore
+    app.container = create_container()
+    app.container.wire(packages=["src.presentation"])  # type: ignore
     app.include_router(api.router)
     return app
 
@@ -24,7 +25,8 @@ app = create_app()
 
 if __name__ == "__main__":
     uvicorn.run(
-        "app:app",
+        "main:app",
         host="127.0.0.1",
         port=8000,
+        reload=True,
     )

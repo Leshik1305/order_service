@@ -8,3 +8,11 @@ class IdempotencyConflictError(Exception):
 
 class IsAvailableQtyError(Exception):
     """Exception raised when quantity is not available"""
+
+
+class PaymentCreationError(Exception):
+    """Exception raised when a payment not created"""
+
+
+class OrderNotFoundError(Exception):
+    """Exception raised when an order is not found."""

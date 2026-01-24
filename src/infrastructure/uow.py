@@ -3,7 +3,7 @@ import dataclasses
 import typing
 
 from src.infrastructure.db import Database
-from .repositories.ordes import Orders
+from .repositories.orders import Orders
 
 
 @dataclasses.dataclass

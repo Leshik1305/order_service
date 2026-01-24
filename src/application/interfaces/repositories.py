@@ -9,6 +9,10 @@ class Orders(Protocol):
 
     async def create(self, order: OrderCreateDTO, key: UUID): ...
 
+    async def update_status(self, order_id: UUID, status: str): ...
+
+    async def get_by_id(self, order_id: UUID): ...
+
 
 class Repository(Protocol):
     orders: Orders

@@ -1,8 +1,10 @@
 import urllib.parse
+from typing import Optional
 from uuid import UUID
 
 import httpx
 
+from application.dtos.item import ItemDTO
 from src.application.exceptions import (
     ItemNotFoundError,
     IsAvailableQtyError,
@@ -19,7 +21,9 @@ class CatalogServiceAPI(CatalogServiceAPIProtocol):
         self._api_key = api_key
         self._client = httpx.AsyncClient()
 
-    async def check_available_qty(self, item_id: UUID, quantity: int) -> bool:
+    async def check_available_qty(
+        self, item_id: UUID, quantity: int
+    ) -> Optional[ItemDTO]:
         url = urllib.parse.urljoin(self._base_url, f"/api/catalog/items/{item_id}")
         response = await self._client.get(
             url,
@@ -36,4 +40,5 @@ class CatalogServiceAPI(CatalogServiceAPIProtocol):
             raise IsAvailableQtyError(
                 f"Not enough stock. Requested: {quantity}, available: {available_qty}"
             )
-        return True
+        item = ItemDTO(**response.json())
+        return item

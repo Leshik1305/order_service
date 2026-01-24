@@ -7,7 +7,7 @@ from src.infrastructure.container import InfrastructureContainer
 class Container(containers.DeclarativeContainer):
     config = providers.Configuration()
 
-    wiring_config = containers.WiringConfiguration(packages=[".presentation"])
+    wiring_config = containers.WiringConfiguration(packages=["src.presentation"])
 
     infrastructure = providers.Container(
         InfrastructureContainer,
@@ -18,4 +18,5 @@ class Container(containers.DeclarativeContainer):
         ApplicationContainer,
         uow=infrastructure.uow,
         catalog_api=infrastructure.catalog_api,
+        payment_api=infrastructure.payment_api,
     )
