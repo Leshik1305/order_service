@@ -5,9 +5,9 @@ from uuid import UUID
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from application.dtos.order import OrderCreateDTO
-from application.exceptions import IdempotencyConflictError
-from domain.value_objects.order_status import OrderStatusEnum
+from src.application.dtos.order import OrderCreateDTO
+from src.application.exceptions import IdempotencyConflictError
+from src.domain.value_objects.order_status import OrderStatusEnum
 from ..db.models import OrderORM
 
 

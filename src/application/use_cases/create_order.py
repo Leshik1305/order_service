@@ -1,5 +1,4 @@
 from domain.value_objects.order_status import OrderStatusEnum
-from infrastructure.http.payments_service import PaymentsServiceAPI
 from ..dtos.order import OrderCreateDTO, OrderReadDTO
 from ..dtos.payment import PaymentCreateDTO
 from ..exceptions import (
@@ -10,6 +9,7 @@ from ..exceptions import (
 
 from ..interfaces.uow import UnitOfWork
 from src.infrastructure.http.catalog_service import CatalogServiceAPI
+from src.infrastructure.http.payments_service import PaymentsServiceAPI
 
 
 class CreateOrder:

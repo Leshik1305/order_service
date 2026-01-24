@@ -3,9 +3,9 @@ from typing import Optional
 
 import httpx
 
-from application.dtos.payment import PaymentCreateDTO, PaymentReadDTO
-from application.exceptions import PaymentCreationError
-from application.interfaces.http_clients import PaymentsServiceAPIProtocol
+from src.application.dtos.payment import PaymentCreateDTO, PaymentReadDTO
+from src.application.exceptions import PaymentCreationError
+from src.application.interfaces.http_clients import PaymentsServiceAPIProtocol
 
 
 class PaymentsServiceAPI(PaymentsServiceAPIProtocol):

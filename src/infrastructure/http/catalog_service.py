@@ -4,7 +4,7 @@ from uuid import UUID
 
 import httpx
 
-from application.dtos.item import ItemDTO
+from src.application.dtos.item import ItemDTO
 from src.application.exceptions import (
     ItemNotFoundError,
     IsAvailableQtyError,

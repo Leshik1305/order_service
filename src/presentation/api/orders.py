@@ -1,11 +1,11 @@
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, status
 
-from application.dtos.payment import PaymentCallbackDTO
-from application.use_cases.payment_callback import PaymentCallback
-from application.use_cases.create_order import CreateOrder
+from src.application.dtos.payment import PaymentCallbackDTO
+from src.application.use_cases.payment_callback import PaymentCallback
+from src.application.use_cases.create_order import CreateOrder
 from src.container import Container
-from application.dtos.order import OrderCreateDTO, OrderReadDTO
+from src.application.dtos.order import OrderCreateDTO, OrderReadDTO
 
 router = APIRouter()
 
