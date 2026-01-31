@@ -18,11 +18,14 @@ class PaymentsServiceAPI(PaymentsServiceAPIProtocol):
     async def create_payment(
         self, payment: PaymentCreateDTO
     ) -> Optional[PaymentReadDTO]:
-        url = urllib.parse.urljoin(self._base_url, "/api/payments")
-        cb_url = urllib.parse.urljoin(self._callback_url, "api/orders/payment-callback")
+        base_url = self._base_url.rstrip("/")
+        url = f"{base_url}/api/payments"
+
+        cb_base = self._callback_url.rstrip("/")
+        cb_url = f"{cb_base}/api/orders/payment-callback"
         payload = {
             "order_id": str(payment.order_id),
-            "amount": str(payment.amount),
+            "amount": f"{payment.amount:.2f}",
             "callback_url": cb_url,
             "idempotency_key": str(payment.idempotency_key),
         }
