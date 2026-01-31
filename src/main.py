@@ -1,3 +1,4 @@
+import os
 import asyncio
 import logging
 from contextlib import asynccontextmanager
@@ -43,7 +44,7 @@ async def lifespan(app: fastapi.FastAPI):
 
 def create_app() -> fastapi.FastAPI:
     container = Container()
-    container.config.from_env()
+    container.config.from_dict(os.environ)
     container.wire(packages=["src.presentation"], modules=[__name__])
     app = fastapi.FastAPI(lifespan=lifespan)
     # app = fastapi.FastAPI()

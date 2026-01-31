@@ -1,4 +1,6 @@
+import os
 from dependency_injector import containers, providers
+
 
 from src.application.container import ApplicationContainer
 from src.infrastructure.container import InfrastructureContainer
@@ -7,7 +9,7 @@ from src.infrastructure.message_broker.kafka_consumer import KafkaConsumerServic
 
 class Container(containers.DeclarativeContainer):
     config = providers.Configuration()
-    config.from_env()
+    config.from_dict(os.environ)
 
     infrastructure = providers.Container(
         InfrastructureContainer,
