@@ -1,9 +1,9 @@
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class PaymentDTO(BaseModel):

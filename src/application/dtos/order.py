@@ -10,6 +10,7 @@ from src.domain.value_objects.order_status import OrderStatusEnum
 class OrderDTO(BaseModel):
     id: UUID
     item_id: UUID
+    user_id: str
     quantity: int
     amount: Decimal
     idempotency_key: UUID
@@ -19,6 +20,7 @@ class OrderDTO(BaseModel):
 
 
 class OrderCreateDTO(BaseModel):
+    user_id: str
     item_id: UUID
     quantity: int
     idempotency_key: UUID = Field(default_factory=uuid4)
@@ -26,10 +28,11 @@ class OrderCreateDTO(BaseModel):
 
 class OrderReadDTO(BaseModel):
     id: UUID
+    user_id: str
     item_id: UUID
     quantity: int
     status: OrderStatusEnum
-    amount: Decimal
+    # amount: Decimal
     created_at: datetime
     update_at: datetime
 

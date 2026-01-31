@@ -16,3 +16,11 @@ class PaymentCreationError(Exception):
 
 class OrderNotFoundError(Exception):
     """Exception raised when an order is not found."""
+
+
+class DuplicateEventError(Exception):
+    """Exception raised when an event already exists."""
+
+
+class ProcessInboxError(Exception):
+    """Exception raised when process inbox failed."""

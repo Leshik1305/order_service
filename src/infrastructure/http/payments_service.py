@@ -35,11 +35,5 @@ class PaymentsServiceAPI(PaymentsServiceAPIProtocol):
             )
             response.raise_for_status()
             return PaymentReadDTO(**response.json())
-        except httpx.HTTPStatusError as exc:
-            raise Exception(
-                f"Payment service error: {exc.response.status_code} - {exc.response.text}"
-            )
-        except httpx.RequestError as exc:
-            raise Exception(f"Network error when accessing the payment API: {exc}")
         except Exception as exc:
-            raise PaymentCreationError(f"Unexpected error: {exc}")
+            raise PaymentCreationError(f"Payment failed: {str(exc)}")

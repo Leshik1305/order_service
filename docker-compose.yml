@@ -13,6 +13,24 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  # --- ДОБАВЛЕННЫЙ БЛОК KAFKA ---
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka_local
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093,EXTERNAL://0.0.0.0:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,EXTERNAL://localhost:9092'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      CLUSTER_ID: '4L6YBt9mQkuEki0v0DqxtQ'
+
   app:
     build:
       dockerfile: ./docker-build/app/Dockerfile
@@ -21,11 +39,13 @@ services:
     restart: always
     depends_on:
       - db
+      - kafka  # Теперь приложение ждет еще и Кафку
     ports:
       - "8000:8000"
     environment:
-      # Важно: используем имя сервиса 'db'
       DATABASE_URL: postgresql+asyncpg://user:password@db:5432/service
+      # Для работы ВНУТРИ докера используем имя сервиса и внутренний порт 29092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
     env_file:
       - .env
 

@@ -19,7 +19,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from src.infrastructure.db import Base
-from src.infrastructure.db.models import OrderORM
+from src.infrastructure.db.models.orders import OrderORM
 
 target_metadata = Base.metadata
 

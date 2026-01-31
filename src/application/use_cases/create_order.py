@@ -3,7 +3,6 @@ from ..dtos.order import OrderCreateDTO, OrderReadDTO
 from ..dtos.payment import PaymentCreateDTO
 from ..exceptions import (
     IsAvailableQtyError,
-    IdempotencyConflictError,
     PaymentCreationError,
 )
 
@@ -25,29 +24,29 @@ class CreateOrder:
 
     async def execute(self, order: OrderCreateDTO) -> OrderReadDTO:
 
-        async with self._uow.init() as repo:
+        async with self._uow() as uow:
 
-            result = await repo.orders.check_idempotency_key(order.idempotency_key)
-            if result:
-                raise IdempotencyConflictError
+            await uow.orders.check_idempotency_key(order.idempotency_key)
+
             item = await self._catalog_service.check_available_qty(
                 item_id=order.item_id, quantity=order.quantity
             )
             if not item:
-                raise IsAvailableQtyError
+                raise IsAvailableQtyError("Not enough quantity in catalog")
             total_amount = item.price * order.quantity
 
-            new_order_orm = await repo.orders.create(order, total_amount)
+            new_order_orm = await uow.orders.create(order, total_amount)
+
+            payment_data = PaymentCreateDTO(
+                order_id=new_order_orm.id,
+                amount=total_amount,
+                idempotency_key=order.idempotency_key,
+            )
             try:
-                payment_data = PaymentCreateDTO(
-                    order_id=new_order_orm.id,
-                    amount=total_amount,
-                    idempotency_key=order.idempotency_key,
-                )
                 await self._payment_service.create_payment(payment_data)
             except PaymentCreationError:
-                await repo.orders.update_status(
+                await uow.orders.update_status_with_outbox(
                     new_order_orm.id, OrderStatusEnum.CANCELLED
                 )
+            finally:
                 return OrderReadDTO.model_validate(new_order_orm)
-            return OrderReadDTO.model_validate(new_order_orm)

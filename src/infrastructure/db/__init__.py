@@ -20,6 +20,7 @@ class Database:
         self.session_factory: sessionmaker[AsyncSession] = sessionmaker(  # type: ignore
             bind=typing.cast(Engine, self.engine),
             autoflush=False,
+            expire_on_commit=False,
             class_=AsyncSession,
         )
 
