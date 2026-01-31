@@ -19,10 +19,10 @@ class PaymentsServiceAPI(PaymentsServiceAPIProtocol):
         self, payment: PaymentCreateDTO
     ) -> Optional[PaymentReadDTO]:
         url = urllib.parse.urljoin(self._base_url, "/api/payments")
-        cb_url = urllib.parse.urljoin(self._callback_url, "/orders/payment-callback")
+        cb_url = urllib.parse.urljoin(self._callback_url, "api/orders/payment-callback")
         payload = {
             "order_id": str(payment.order_id),
-            "amount": payment.amount,
+            "amount": str(payment.amount),
             "callback_url": cb_url,
             "idempotency_key": str(payment.idempotency_key),
         }
@@ -35,5 +35,18 @@ class PaymentsServiceAPI(PaymentsServiceAPIProtocol):
             )
             response.raise_for_status()
             return PaymentReadDTO(**response.json())
+        except httpx.HTTPStatusError as exc:
+            # Выводим подробности ошибки от сервера (код и тело ответа)
+            print(f"--- DEBUG PAYMENT ERROR ---")
+            print(f"Status Code: {exc.response.status_code}")
+            print(f"Response Body: {exc.response.text}")
+            print(f"Payload sent: {payload}")
+            print(f"---------------------------")
+            raise PaymentCreationError(f"Payment API returned error: {exc.response.text}")
+
         except Exception as exc:
-            raise PaymentCreationError(f"Payment failed: {str(exc)}")
+            # Для прочих ошибок (таймаут, проблемы с сетью)
+            print(f"--- DEBUG CONNECTION ERROR ---")
+            print(f"Exception: {str(exc)}")
+            print(f"------------------------------")
+            raise PaymentCreationError(f"Payment failed due to connection: {str(exc)}")
