@@ -30,7 +30,7 @@ class OrderReadDTO(BaseModel):
     id: UUID
     user_id: str
     item_id: UUID
-    quantity: int
+    quantity: UUID
     status: OrderStatusEnum
     # amount: Decimal
     created_at: datetime
