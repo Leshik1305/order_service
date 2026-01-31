@@ -48,5 +48,5 @@ class CreateOrder:
                 await uow.orders.update_status_with_outbox(
                     new_order_orm.id, OrderStatusEnum.CANCELLED
                 )
-            finally:
-                return OrderReadDTO.model_validate(new_order_orm)
+
+            return OrderReadDTO.model_validate(new_order_orm)

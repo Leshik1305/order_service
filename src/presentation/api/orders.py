@@ -1,9 +1,10 @@
 from uuid import UUID
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
 
 from src.application.dtos.payment import PaymentCallbackDTO
+from src.application.exceptions import ItemNotFoundError, IsAvailableQtyError
 from src.application.use_cases.get_order_by_id import GetOrderByIdUseCase
 from src.application.use_cases.payment_callback import PaymentCallback
 from src.application.use_cases.create_order import CreateOrder
@@ -21,13 +22,14 @@ async def create_order(
     order: OrderCreateDTO,
     uc: CreateOrder = Depends(Provide[Container.application.create_order]),
 ):
-    result = await uc.execute(order)
-    print(result)
-    return result
+    try:
+        return await uc.execute(order)
+    except (IsAvailableQtyError, ItemNotFoundError) as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.get(
-    "/orders/{item_id}", status_code=status.HTTP_200_OK, response_model=OrderReadDTO
+    "/orders/{order_id}", status_code=status.HTTP_200_OK, response_model=OrderReadDTO
 )
 @inject
 async def get_order_by_id(

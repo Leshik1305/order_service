@@ -13,7 +13,7 @@ class OrderDTO(BaseModel):
     user_id: str
     quantity: int
     amount: Decimal
-    idempotency_key: UUID
+    idempotency_key: str | None
     status: OrderStatusEnum
     created_at: datetime
     update_at: datetime
@@ -23,7 +23,7 @@ class OrderCreateDTO(BaseModel):
     user_id: str
     item_id: UUID
     quantity: int
-    idempotency_key: UUID = Field(default_factory=uuid4)
+    idempotency_key: str | None
 
 
 class OrderReadDTO(BaseModel):
