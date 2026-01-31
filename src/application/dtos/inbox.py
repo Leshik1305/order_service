@@ -10,7 +10,7 @@ from src.domain.value_objects.event_type import EventTypeEnum
 class InboxCreateDTO(BaseModel):
     idempotency_key: UUID
     event_type: EventTypeEnum
-    payload: [str, Any]
+    payload: dict[str, Any]
 
 
 class InboxReadDTO(BaseModel):
