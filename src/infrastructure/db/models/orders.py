@@ -20,8 +20,8 @@ class OrderORM(Base):
     user_id: Mapped[str] = mapped_column(String, nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
     amount: Mapped[Decimal] = mapped_column(Numeric(10, 2))
-    idempotency_key: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True), unique=True, nullable=False
+    idempotency_key: Mapped[str] = mapped_column(
+        String(255), nullable=False, unique=True
     )
     status: Mapped[OrderStatusEnum] = mapped_column(
         Enum(OrderStatusEnum, native_enum=False), default=OrderStatusEnum.NEW

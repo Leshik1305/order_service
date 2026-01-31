@@ -52,7 +52,7 @@ class Orders(OrdersProtocol):
 
         return new_order
 
-    async def check_idempotency_key(self, idempotency_key: UUID):
+    async def check_idempotency_key(self, idempotency_key: str):
         stmt = select(OrderORM).where(OrderORM.idempotency_key == idempotency_key)
         result = await self._session.execute(stmt)
         if result.scalar_one_or_none():
