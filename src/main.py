@@ -18,28 +18,28 @@ async def lifespan(app: fastapi.FastAPI):
     await db.drop_database()
     await db.create_database()
     logging.info("Database initialized")
-    # kafka_producer = infrastructure_container.kafka_producer()
-    # await kafka_producer.start()
-    # logging.info("Kafka Producer started")
-    # outbox_worker = container.application.process_outbox()
-    # outbox_task = asyncio.create_task(outbox_worker.run())
-    # logging.info("Outbox Worker background task started")
-    # kafka_consumer = container.kafka_consumer()
-    # consumer_task = asyncio.create_task(kafka_consumer.run())
-    # logging.info("Kafka Consumer background task started")
+    kafka_producer = infrastructure_container.kafka_producer()
+    await kafka_producer.start()
+    logging.info("Kafka Producer started")
+    outbox_worker = container.application.process_outbox()
+    outbox_task = asyncio.create_task(outbox_worker.run())
+    logging.info("Outbox Worker background task started")
+    kafka_consumer = container.kafka_consumer()
+    consumer_task = asyncio.create_task(kafka_consumer.run())
+    logging.info("Kafka Consumer background task started")
 
     try:
         yield
     finally:
         logging.info("Shutting down services...")
 
-        # outbox_worker.stop()
-        #
-        # await kafka_consumer.stop()
-        #
-        # await asyncio.gather(outbox_task, consumer_task, return_exceptions=True)
-        #
-        # await kafka_producer.stop()
+        outbox_worker.stop()
+
+        await kafka_consumer.stop()
+
+        await asyncio.gather(outbox_task, consumer_task, return_exceptions=True)
+
+        await kafka_producer.stop()
         await db.engine.dispose()
         logging.info("All services stopped")
 
