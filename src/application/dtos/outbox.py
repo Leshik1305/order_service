@@ -8,7 +8,7 @@ from src.domain.value_objects.outbox_event_status import OutboxEventStatusEnum
 
 
 class OutboxEventDTO(BaseModel):
-    id: UUID
+    id: UUID | str
     event_type: str
     status: str
     payload: dict
