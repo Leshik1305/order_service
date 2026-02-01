@@ -40,6 +40,8 @@ class PaymentsServiceAPI(PaymentsServiceAPIProtocol):
         except httpx.HTTPStatusError as exc:
             # Логируем ошибку для отладки
             print(f"Payment API Error: {exc.response.text}")
-            raise PaymentCreationError(f"Payment API returned {exc.response.status_code}")
+            raise PaymentCreationError(
+                f"Payment API returned {exc.response.status_code}"
+            )
         except Exception as exc:
             raise PaymentCreationError(f"Payment connection failed: {str(exc)}")
