@@ -16,19 +16,14 @@ class OutboxEvents(OutboxEventsProtocol):
         self._session = session
 
     async def create(self, event: OutboxCreateDTO) -> OutboxEventDTO:
-        stmt = (
-            insert(OutboxEventORM)
-            .values(
-                {
-                    "event_type": event.event_type,
-                    "payload": event.payload,
-                }
-            )
-            .returning(literal_column("*"))
+        new_event = OutboxEventORM(
+            event_type=event.event_type,
+            payload=event.payload,
         )
-        result = await self._session.execute(stmt)
-        row = result.fetchone()
-        return self._construct(row)
+        self._session.add(new_event)
+        await self._session.flush()
+        await self._session.refresh(new_event)
+        return OutboxEventDTO.model_validate(new_event)
 
     async def get_pending_events(self, limit: int = 100) -> list[OutboxEventDTO]:
         stmt = (

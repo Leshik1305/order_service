@@ -13,6 +13,7 @@ from .outbox import OutboxEvents
 from ..db.models.orders import OrderORM
 
 from ...application.interfaces.repositories import OrdersProtocol
+from ...domain.value_objects.event_type import EventTypeEnum
 
 
 class Orders(OrdersProtocol):
@@ -30,7 +31,10 @@ class Orders(OrdersProtocol):
             "quantity": order.quantity,
             "idempotency_key": str(uuid4()),
         }
-        event_dto = OutboxCreateDTO(event_type=event_type, payload=payload)
+        event_dto = OutboxCreateDTO(
+            event_type=EventTypeEnum(event_type),  # Преобразуем строку в член Enum
+            payload=payload,
+        )
         await self._outbox.create(event=event_dto)
 
     async def create(self, order: OrderCreateDTO, amount: Decimal) -> OrderORM:
