@@ -38,8 +38,8 @@ class OutboxEvents(OutboxEventsProtocol):
             .limit(limit)
         )
         result = await self._session.execute(stmt)
-        rows = result.fetchall()
-        return [self._construct(row) for row in rows]
+        events = result.scalars().all()
+        return [OutboxEventDTO.model_validate(event) for event in events]
 
     async def mark_as_sent(self, event_id: str) -> None:
         stmt = (
