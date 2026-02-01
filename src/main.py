@@ -49,7 +49,6 @@ def create_app() -> fastapi.FastAPI:
     container.config.from_dict(os.environ)
     container.wire(packages=["src.presentation"], modules=[__name__])
     app = fastapi.FastAPI(lifespan=lifespan)
-    # app = fastapi.FastAPI()
     app.container = container
     app.include_router(api.router)
     return app
