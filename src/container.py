@@ -26,7 +26,7 @@ class Container(containers.DeclarativeContainer):
     )
     kafka_consumer = providers.Singleton(
         KafkaConsumerService,
-        use_case=ApplicationContainer.process_inbox,
+        use_case=application.process_inbox,
         topic=config.KAFKA_CONSUMER_TOPIC,
         bootstrap_servers=config.KAFKA_BOOTSTRAP_SERVERS,
         group_id=config.KAFKA_CONSUMER_GROUP_ID,
