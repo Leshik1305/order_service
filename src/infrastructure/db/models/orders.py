@@ -24,7 +24,7 @@ class OrderORM(Base):
         String(255), nullable=False, unique=True
     )
     status: Mapped[OrderStatusEnum] = mapped_column(
-        Enum(OrderStatusEnum, native_enum=False), default=OrderStatusEnum.NEW
+        Enum(OrderStatusEnum, native_enum=False), default=OrderStatusEnum.NEW.value
     )
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     update_at: Mapped[datetime] = mapped_column(
