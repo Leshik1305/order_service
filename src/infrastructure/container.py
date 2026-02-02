@@ -2,6 +2,7 @@ from dependency_injector import containers, providers
 
 from .db import Database
 from .http.catalog_service import CatalogServiceAPI
+from .http.notifications_service import NotificationsServiceAPI
 from .http.payments_service import PaymentsServiceAPI
 from .message_broker.kafka_producer import KafkaProducerService
 from .uow import UnitOfWork
@@ -31,6 +32,12 @@ class InfrastructureContainer(containers.DeclarativeContainer):
         base_url=config.BASE_URL,
         api_key=config.API_KEY,
         callback_url=config.CALLBACK_URL,
+    )
+
+    notification_api = providers.Singleton(
+        NotificationsServiceAPI,
+        base_url=config.BASE_URL,
+        api_key=config.API_KEY,
     )
 
     kafka_producer = providers.Singleton(

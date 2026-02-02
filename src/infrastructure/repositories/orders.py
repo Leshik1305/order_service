@@ -1,6 +1,6 @@
 from decimal import Decimal
 from typing import Optional
-from uuid import UUID, uuid4
+from uuid import UUID, uuid4, uuid5, NAMESPACE_DNS
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,16 +23,17 @@ class Orders(OrdersProtocol):
 
     async def _create_outbox_event(self, order: OrderORM, event_suffix: str) -> None:
         event_type = f"order.{event_suffix.lower()}"
+        idempotency_key = uuid5(NAMESPACE_DNS, f"{order.id}:{event_type}")
 
         payload = {
             "event_type": event_type,
             "order_id": str(order.id),
             "item_id": str(order.item_id),
             "quantity": order.quantity,
-            "idempotency_key": str(uuid4()),
+            "idempotency_key": idempotency_key,
         }
         event_dto = OutboxCreateDTO(
-            event_type=EventTypeEnum(event_type),  # Преобразуем строку в член Enum
+            event_type=EventTypeEnum(event_type),
             payload=payload,
         )
         await self._outbox.create(event=event_dto)
