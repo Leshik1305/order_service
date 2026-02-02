@@ -21,7 +21,7 @@ class OutboxEventORM(Base):
     status: Mapped[OutboxEventStatusEnum] = mapped_column(
         Enum(OutboxEventStatusEnum, native_enum=False),
         default=OutboxEventStatusEnum.PENDING,
-        server_default=OutboxEventStatusEnum.PENDING,
+        server_default=OutboxEventStatusEnum.PENDING.value,
     )
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(

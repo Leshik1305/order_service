@@ -35,7 +35,9 @@ class InboxEvents(InboxEventsProtocol):
         row = result.scalar_one_or_none()
 
         if row is None:
-            raise DuplicateEventError(f"Event {event.event_id} already processed")
+            raise DuplicateEventError(
+                f"Event {event.idempotency_key} already processed"
+            )
 
         return self._construct(row)
 
@@ -72,7 +74,7 @@ class InboxEvents(InboxEventsProtocol):
     @staticmethod
     def _construct(row) -> InboxReadDTO:
         return InboxReadDTO(
-            event_id=row.idempotency_key,
+            idempotency_key=row.idempotency_key,
             event_type=row.event_type,
             payload=row.payload,
             status=row.status,
