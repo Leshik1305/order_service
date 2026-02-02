@@ -24,27 +24,28 @@ class ProcessOutboxEventsUseCase:
     async def run(self) -> None:
         self._is_running = True
         while self._is_running:
+            events = []  # Инициализируем заранее
             try:
                 async with self._uow() as uow:
                     events = await uow.outbox.get_pending_events(limit=self._batch_size)
 
-                    if not events:
-                        pass
-
-                    else:
+                    if events:
                         for event in events:
                             try:
+                                # 1. Отправляем в Кафку
                                 await self._kafka_producer.publish_event(
                                     topic=self._topic, event=event
                                 )
+                                # 2. Помечаем как SENT.
+                                # УБЕДИТЕСЬ, что uow.outbox использует текущую сессию uow!
                                 await uow.outbox.mark_as_sent(event.id)
-                            except Exception as e:
-                                print(f"Failed to publish event {event.id}: {e}")
 
-                if not events:
-                    await asyncio.sleep(5)
-                else:
-                    await asyncio.sleep(1)
+                            except Exception as e:
+                                print(f"Failed to process event {event.id}: {e}")
+                                # Можно решить: прерывать пачку или пропустить событие
+
+                # Спим вне блока транзакции
+                await asyncio.sleep(1 if events else 5)
 
             except Exception as e:
                 print(f"Error in outbox worker loop: {e}")
