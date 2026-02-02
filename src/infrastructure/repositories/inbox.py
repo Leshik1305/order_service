@@ -21,7 +21,7 @@ class InboxEvents(InboxEventsProtocol):
             insert(InboxEventORM)
             .values(
                 {
-                    "idempotency_key": event.event_id,
+                    "idempotency_key": event.idempotency_key,
                     "event_type": event.event_type,
                     "payload": event.payload,
                     "status": InboxEventStatusEnum.PENDING,
