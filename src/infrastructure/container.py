@@ -34,7 +34,7 @@ class InfrastructureContainer(containers.DeclarativeContainer):
         callback_url=config.CALLBACK_URL,
     )
 
-    notification_api = providers.Singleton(
+    notifications_api = providers.Singleton(
         NotificationsServiceAPI,
         base_url=config.BASE_URL,
         api_key=config.API_KEY,

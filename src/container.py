@@ -23,7 +23,7 @@ class Container(containers.DeclarativeContainer):
         kafka_producer=infrastructure.kafka_producer,
         catalog_api=infrastructure.catalog_api,
         payment_api=infrastructure.payment_api,
-        notification_api=infrastructure.notification_api,
+        notifications_api=infrastructure.notifications_api,
     )
     kafka_consumer = providers.Singleton(
         KafkaConsumerService,
