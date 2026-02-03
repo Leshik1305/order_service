@@ -19,7 +19,7 @@ class ProcessOutboxEventsUseCase:
     ):
         self._uow = uow
         self._kafka_producer = kafka_producer
-        # self._notification_use_case = notification_use_case
+        self._notification_use_case = notification_use_case
         self._topic = topic
         self._batch_size = batch_size
         self._is_running = False
@@ -41,7 +41,7 @@ class ProcessOutboxEventsUseCase:
                                 await self._kafka_producer.publish_event(
                                     topic=self._topic, event=event
                                 )
-                                # await self._notification_use_case.execute(event.payload)
+                                await self._notification_use_case.execute(event.payload)
                                 await uow.outbox.mark_as_sent(event.id)
 
                             except Exception as e:
