@@ -30,7 +30,7 @@ class PaymentsServiceAPI(PaymentsServiceAPIProtocol):
                 url,
                 headers={"X-API-Key": self._api_key},
                 json=payload,
-                timeout=20.0,
+                timeout=10.0,
             )
             response.raise_for_status()
 

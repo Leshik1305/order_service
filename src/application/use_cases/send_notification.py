@@ -22,6 +22,8 @@ class SendNotificationUseCase:
         message = self._templates.get(event_type)
         idempotency_key = event_payload.get("idempotency_key")
         try:
+            for i in range(10):
+                print("UP")
             await self._notifications_api.send_notification(
                 message=message, idempotency_key=idempotency_key
             )
