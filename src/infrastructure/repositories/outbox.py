@@ -19,6 +19,7 @@ class OutboxEvents(OutboxEventsProtocol):
         new_event = OutboxEventORM(
             event_type=event.event_type,
             payload=event.payload,
+            status=OutboxEventStatusEnum.PENDING,
         )
         self._session.add(new_event)
         await self._session.flush()
