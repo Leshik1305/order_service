@@ -12,7 +12,7 @@ class SendNotificationUseCase:
             "order.new": "NEW: Ваш заказ создан и ожидает оплаты",
             "order.paid": "PAID: Ваш заказ успешно оплачен и готов к отправке",
             "order.shipped": "SHIPPED: Ваш заказ отправлен в доставку",
-            "order.cancelled": "CANCELLED: Ваш заказ отменен.",
+            "order.cancelled": "CANCELLED: Ваш заказ отменен",
         }
 
     async def execute(self, event_payload: dict, event_type: str) -> None:
