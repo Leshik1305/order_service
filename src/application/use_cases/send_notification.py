@@ -9,7 +9,7 @@ class SendNotificationUseCase:
     def __init__(self, notifications_api: NotificationsServiceAPI):
         self._notifications_api = notifications_api
         self._templates = {
-            "order.new": "NEW: Ваш заказ создан и ожидает оплаты",
+            "order.created": "NEW: Ваш заказ создан и ожидает оплаты",
             "order.paid": "PAID: Ваш заказ успешно оплачен и готов к отправке",
             "order.shipped": "SHIPPED: Ваш заказ отправлен в доставку.",
             "order.cancelled": "CANCELLED: Ваш заказ отменен.",
