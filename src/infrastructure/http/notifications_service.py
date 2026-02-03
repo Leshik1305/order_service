@@ -13,11 +13,12 @@ class NotificationsServiceAPI:
         self._client = httpx.AsyncClient()
 
     async def send_notification(
-        self, message: str, idempotency_key: str
+        self, message: str, idempotency_key: str, order_id: str
     ) -> Dict[str, Any]:
         url = f"{self._base_url}/api/notifications"
         payload = {
             "message": message,
+            "order_id": str(order_id),
             "idempotency_key": idempotency_key,
         }
 
@@ -32,7 +33,6 @@ class NotificationsServiceAPI:
             print("получил ответ")
             response.raise_for_status()
             print("получил правильный ответ")
-
 
             return response.json()
 
