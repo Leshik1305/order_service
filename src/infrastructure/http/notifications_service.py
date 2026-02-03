@@ -18,7 +18,7 @@ class NotificationsServiceAPI:
         url = f"{self._base_url}/api/notifications"
         payload = {
             "message": message,
-            "order_id": str(order_id),
+            # "order_id": str(order_id),
             "idempotency_key": idempotency_key,
         }
 
