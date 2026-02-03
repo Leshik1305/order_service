@@ -22,17 +22,17 @@ class NotificationsServiceAPI:
         }
 
         try:
-            for i in range(10):
-                print("Отправляю запрос")
+            print("Отправляю запрос")
             response = await self._client.post(
                 url,
                 headers={"X-API-Key": self._api_key},
                 json=payload,
                 timeout=10.0,
             )
-
-            response.raise_for_status()
             print("получил ответ")
+            response.raise_for_status()
+            print("получил правильный ответ")
+
 
             return response.json()
 
