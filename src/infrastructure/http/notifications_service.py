@@ -18,7 +18,7 @@ class NotificationsServiceAPI:
         url = f"{self._base_url}/api/notifications"
         payload = {
             "message": message,
-            # "order_id": str(order_id),
+            "order_id": str(order_id),
             "idempotency_key": idempotency_key,
         }
 
@@ -29,6 +29,12 @@ class NotificationsServiceAPI:
                 headers={"X-API-Key": self._api_key},
                 json=payload,
                 timeout=10.0,
+            )
+            print(
+                f"Получен ответ от {url}\n"
+                f"Статус: {response.status_code}\n"
+                f"Заголовки: {response.headers}\n"
+                f"Тело (raw): {response.text}"
             )
             print("получил ответ")
             response.raise_for_status()

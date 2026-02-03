@@ -31,7 +31,7 @@ class SendNotificationUseCase:
             response_data = await self._notifications_api.send_notification(
                 message=message,
                 idempotency_key=idempotency_key,
-                # order_id=order_id,
+                order_id=order_id,
             )
             for i in range(10):
                 logger.info(
