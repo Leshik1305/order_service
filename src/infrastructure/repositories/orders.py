@@ -53,7 +53,7 @@ class Orders(OrdersProtocol):
 
         await self._session.refresh(new_order)
 
-        await self._create_outbox_event(new_order, "created")
+        await self._create_outbox_event(new_order, "new")
 
         return new_order
 
