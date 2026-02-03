@@ -15,9 +15,10 @@ class SendNotificationUseCase:
             "order.cancelled": "CANCELLED: Ваш заказ отменен.",
         }
 
-    async def execute(self, event_payload: dict) -> None:
-        event_type = event_payload.get("event_type")
+    async def execute(self, event_payload: dict, event_type: str) -> None:
+
         if event_type not in self._templates:
+            logger.warning(f"Unknown event type: {event_type}")
             return
         message = self._templates.get(event_type)
         idempotency_key = event_payload.get("idempotency_key")

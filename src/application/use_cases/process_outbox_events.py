@@ -41,7 +41,10 @@ class ProcessOutboxEventsUseCase:
                                 await self._kafka_producer.publish_event(
                                     topic=self._topic, event=event
                                 )
-                                await self._notification_use_case.execute(event.payload)
+                                await self._notification_use_case.execute(
+                                    event.payload, event_type=event.event_type
+                                )
+                                print("Вызвал сервис нотификации")
                                 await uow.outbox.mark_as_sent(event.id)
 
                             except Exception as e:
