@@ -9,10 +9,10 @@ class SendNotificationUseCase:
     def __init__(self, notifications_api: NotificationsServiceAPI):
         self._notifications_api = notifications_api
         self._templates = {
-            "order.new": "Ваш заказ создан и ожидает оплаты",
-            "order.paid": "Ваш заказ успешно оплачен и готов к отправке",
-            "order.shipped": "Ваш заказ отправлен в доставку",
-            "order.cancelled": "Ваш заказ отменен.",
+            "order.new": "NEW: Ваш заказ создан и ожидает оплаты",
+            "order.paid": "PAID: Ваш заказ успешно оплачен и готов к отправке",
+            "order.shipped": "SHIPPED: Ваш заказ отправлен в доставку",
+            "order.cancelled": "CANCELLED: Ваш заказ отменен.",
         }
 
     async def execute(self, event_payload: dict) -> None:
