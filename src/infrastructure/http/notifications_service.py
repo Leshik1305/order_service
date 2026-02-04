@@ -1,6 +1,6 @@
 import logging
 from typing import Any, Dict
-
+import urllib.parse
 import httpx
 from tenacity import (
     retry,
@@ -32,31 +32,36 @@ class NotificationsServiceAPI:
         self, message: str, idempotency_key: str, order_id: str
     ) -> Dict[str, Any]:
         """Отправка notification"""
-        url = f"{self._base_url}/api/notifications"
+        url = urllib.parse.urljoin(self._base_url, "/api/notifications")
         payload = {
             "message": message,
             "order_id": str(order_id),
             "idempotency_key": idempotency_key,
         }
 
-        print("Отправляю запрос")
+        logger.info(
+            "Отправка уведомления: order_id=%s, idempotency_key=%s",
+            order_id,
+            idempotency_key,
+        )
         response = await self._client.post(
             url,
             headers={"X-API-Key": self._api_key},
             json=payload,
             timeout=10.0,
         )
-        print(
-            f"Получен ответ от {url}\n"
-            f"Статус: {response.status_code}\n"
-            f"Заголовки: {response.headers}\n"
-            f"Тело (raw): {response.text}"
+        logger.info(f"Получен ответ: статус={response.status_code}, url={url}")
+
+        logger.debug(
+            f"Заголовки ответа: {response.headers} | Тело: {response.text}",
         )
 
         if response.status_code >= 500:
-            print(f"Сервер вернул {response.status_code}, пробую еще раз...")
+            logger.error(
+                f"Ошибка сервера {response.status_code} для order_id={order_id}. Инициирую повтор..."
+            )
             response.raise_for_status()
         response.raise_for_status()
-        print("получил правильный ответ")
+        logger.info(f"Уведомление успешно отправлено для order_id={order_id}")
 
         return response.json()
