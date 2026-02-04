@@ -46,8 +46,25 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection):
-    context.configure(connection=connection, target_metadata=target_metadata)
+    # Проверяем, существует ли уже таблица из вашей первой миграции
+    # Замените 'users' или 'orders' на имя любой вашей реальной таблицы
+    from sqlalchemy import inspect
 
+    inspector = inspect(connection)
+    tables = inspector.get_table_names()
+
+    # Если таблицы уже есть, а таблицы alembic_version нет
+    if "orders" in tables and "alembic_version" not in tables:
+        # Маркируем базу как "уже на последней версии" без выполнения кода миграций
+        context.configure(connection=connection, target_metadata=target_metadata)
+        context.get_context()._stamp(context.get_current_revision(), "head")
+        print(
+            "Database tables already exist. Stamping head without running migrations."
+        )
+        return  # Выходим, не запуская миграции, которые вызывают ошибку
+
+    # Если всё чисто, запускаем миграции как обычно
+    context.configure(connection=connection, target_metadata=target_metadata)
     with context.begin_transaction():
         context.run_migrations()
 
