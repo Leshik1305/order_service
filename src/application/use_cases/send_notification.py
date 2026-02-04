@@ -28,14 +28,11 @@ class SendNotificationUseCase:
             return
         try:
             print("UP")
-            response_data = await self._notifications_api.send_notification(
+            await self._notifications_api.send_notification(
                 message=message,
                 idempotency_key=idempotency_key,
                 order_id=order_id,
             )
-            for i in range(10):
-                logger.info(
-                    f"SUCCESS: Сервис уведомлений ответил. Данные: {response_data}"
-                )
+
         except Exception as e:
             logger.error(f"Failed to send notification for {event_type}: {e}")

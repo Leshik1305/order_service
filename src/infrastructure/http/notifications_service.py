@@ -2,6 +2,13 @@ import logging
 from typing import Any, Dict
 
 import httpx
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_exponential,
+    retry_if_exception_type,
+    before_sleep_log,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +19,15 @@ class NotificationsServiceAPI:
         self._api_key = api_key
         self._client = httpx.AsyncClient()
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=1, max=10),
+        retry=(
+            retry_if_exception_type(httpx.HTTPStatusError)
+            | retry_if_exception_type(httpx.RequestError)
+        ),
+        before_sleep=before_sleep_log(logger, logging.WARNING),
+    )
     async def send_notification(
         self, message: str, idempotency_key: str, order_id: str
     ) -> Dict[str, Any]:
@@ -23,32 +39,24 @@ class NotificationsServiceAPI:
             "idempotency_key": idempotency_key,
         }
 
-        try:
-            print("Отправляю запрос")
-            response = await self._client.post(
-                url,
-                headers={"X-API-Key": self._api_key},
-                json=payload,
-                timeout=10.0,
-            )
-            print(
-                f"Получен ответ от {url}\n"
-                f"Статус: {response.status_code}\n"
-                f"Заголовки: {response.headers}\n"
-                f"Тело (raw): {response.text}"
-            )
-            print("получил ответ")
+        print("Отправляю запрос")
+        response = await self._client.post(
+            url,
+            headers={"X-API-Key": self._api_key},
+            json=payload,
+            timeout=10.0,
+        )
+        print(
+            f"Получен ответ от {url}\n"
+            f"Статус: {response.status_code}\n"
+            f"Заголовки: {response.headers}\n"
+            f"Тело (raw): {response.text}"
+        )
+
+        if response.status_code >= 500:
+            print(f"Сервер вернул {response.status_code}, пробую еще раз...")
             response.raise_for_status()
-            print("получил правильный ответ")
+        response.raise_for_status()
+        print("получил правильный ответ")
 
-            return response.json()
-
-        except httpx.HTTPStatusError as exc:
-            logger.error(
-                f"Notification service error: {exc.response.status_code} - {exc.response.text}"
-            )
-
-        except (httpx.RequestError, Exception) as exc:
-            logger.exception(
-                f"Network error while reaching notification service: {exc}"
-            )
+        return response.json()
