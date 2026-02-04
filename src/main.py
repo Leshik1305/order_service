@@ -15,8 +15,8 @@ async def lifespan(app: fastapi.FastAPI):
     container = app.container
     infrastructure_container = container.infrastructure
     db = infrastructure_container.db()
-    await db.drop_database()
-    await db.create_database()
+    # await db.drop_database()
+    # await db.create_database()
     logging.info("Database initialized")
     kafka_producer = infrastructure_container.kafka_producer()
     await kafka_producer.start()
