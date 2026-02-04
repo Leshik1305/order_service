@@ -7,26 +7,8 @@ import httpx
 
 from src.application.dtos.item import ItemDTO
 from src.application.exceptions import (
-    ItemNotFoundError,
     IsAvailableQtyError,
-)
-from src.application.interfaces.http_clients import (
-    CatalogServiceAPIProtocol,
-)
-
-logger = logging.getLogger(__name__)
-
-
-import urllib.parse
-from typing import Optional
-from uuid import UUID
-
-import httpx
-
-from src.application.dtos.item import ItemDTO
-from src.application.exceptions import (
     ItemNotFoundError,
-    IsAvailableQtyError,
 )
 from src.application.interfaces.http_clients import (
     CatalogServiceAPIProtocol,
@@ -34,7 +16,6 @@ from src.application.interfaces.http_clients import (
 
 
 class CatalogServiceAPI(CatalogServiceAPIProtocol):
-
     def __init__(self, base_url: str, api_key: str):
         self._base_url = base_url
         self._api_key = api_key
@@ -43,6 +24,7 @@ class CatalogServiceAPI(CatalogServiceAPIProtocol):
     async def check_available_qty(
         self, item_id: UUID, quantity: int
     ) -> Optional[ItemDTO]:
+        """Проверка достаточного количества товара"""
         url = urllib.parse.urljoin(self._base_url, f"/api/catalog/items/{item_id}")
         response = await self._client.get(
             url,

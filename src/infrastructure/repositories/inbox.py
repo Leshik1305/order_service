@@ -1,14 +1,14 @@
 from uuid import UUID
 
-from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy import func, update
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.dtos.inbox import InboxCreateDTO, InboxReadDTO
 from src.application.exceptions import DuplicateEventError
 from src.application.interfaces.repositories import InboxEventsProtocol
 from src.domain.value_objects.inbox_event_status import InboxEventStatusEnum
-from src.infrastructure.db.models.inbox import InboxEventORM
+from ..db.models.inbox import InboxEventORM
 
 
 class InboxEvents(InboxEventsProtocol):
@@ -40,24 +40,6 @@ class InboxEvents(InboxEventsProtocol):
             )
 
         return self._construct(row)
-
-    # async def get_by_key(self, key: UUID) -> InboxMessageORM | None:
-    #     result = await self._session.execute(
-    #         select(InboxMessageORM).filter_by(idempotency_key=key)
-    #     )
-    #     return result.scalar_one_or_none()
-
-    # async def get_pending_events(self, limit: int = 100) -> list[InboxReadDTO]:
-    #     """Получение необработанных событий"""
-    #     stmt = (
-    #         select(InboxMessageORM)
-    #         .where(InboxMessageORM.status == InboxEventStatusEnum.PENDING)
-    #         .order_by(InboxMessageORM.created_at)
-    #         .limit(limit)
-    #     )
-    #     result = await self._session.execute(stmt)
-    #     rows = result.fetchall()
-    #     return [self._construct(row) for row in rows]
 
     async def mark_as_processed(self, key: UUID) -> None:
         """Пометить событие как обработанное"""

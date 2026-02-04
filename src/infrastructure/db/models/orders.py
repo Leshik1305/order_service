@@ -2,11 +2,11 @@ from datetime import datetime
 from decimal import Decimal
 from uuid import uuid4
 
-from sqlalchemy import Enum, DateTime, func, UUID, Integer, Numeric, String
+from sqlalchemy import UUID, DateTime, Enum, Integer, Numeric, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.domain.value_objects.order_status import OrderStatusEnum
-from src.infrastructure.db import Base
+from .base import Base
 
 
 class OrderORM(Base):

@@ -1,6 +1,6 @@
 import os
-from dependency_injector import containers, providers
 
+from dependency_injector import containers, providers
 
 from src.application.container import ApplicationContainer
 from src.infrastructure.container import InfrastructureContainer

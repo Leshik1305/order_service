@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
 
 import httpx
 
@@ -15,6 +15,7 @@ class NotificationsServiceAPI:
     async def send_notification(
         self, message: str, idempotency_key: str, order_id: str
     ) -> Dict[str, Any]:
+        """Отправка notification"""
         url = f"{self._base_url}/api/notifications"
         payload = {
             "message": message,

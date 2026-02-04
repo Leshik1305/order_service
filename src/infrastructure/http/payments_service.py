@@ -17,6 +17,7 @@ class PaymentsServiceAPI(PaymentsServiceAPIProtocol):
     async def create_payment(
         self, payment: PaymentCreateDTO
     ) -> Optional[PaymentReadDTO]:
+        """Создание платежа"""
         url = f"{self._base_url}/api/payments"
         cb_url = f"{self._callback_url}/orders/payment-callback"
         payload = {
@@ -37,7 +38,6 @@ class PaymentsServiceAPI(PaymentsServiceAPIProtocol):
             return PaymentReadDTO(**response.json())
 
         except httpx.HTTPStatusError as exc:
-            # Логируем ошибку для отладки
             print(f"Payment API Error: {exc.response.text}")
             raise PaymentCreationError(
                 f"Payment API returned {exc.response.status_code}"

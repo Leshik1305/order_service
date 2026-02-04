@@ -1,12 +1,13 @@
 from datetime import datetime
-from uuid import UUID as PyUUID, uuid4
+from uuid import UUID as PyUUID
+from uuid import uuid4
 
-from sqlalchemy import JSON, Enum, DateTime, func, UUID
+from sqlalchemy import JSON, UUID, DateTime, Enum, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.domain.value_objects.event_type import EventTypeEnum
 from src.domain.value_objects.outbox_event_status import OutboxEventStatusEnum
-from src.infrastructure.db import Base
+from .base import Base
 
 
 class OutboxEventORM(Base):

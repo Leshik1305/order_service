@@ -35,12 +35,13 @@ class KafkaConsumerService:
         await self._consumer.start()
 
     async def stop(self):
-        """Остановка Consumer"""
+        """Остановка Kafka Consumer"""
 
         if self._consumer:
             await self._consumer.stop()
 
     async def run(self):
+        """Работа Kafka Consumer"""
         await self.start()
         logger.info(f"Consumer started on topic {self._topic}")
         try:
@@ -49,13 +50,11 @@ class KafkaConsumerService:
                     continue
 
                 try:
-
                     await self._use_case.execute(message.value)
 
                     await self._consumer.commit()
 
                 except Exception as e:
-
                     logger.error(f"Error processing message: {e}", exc_info=True)
                     continue
         finally:

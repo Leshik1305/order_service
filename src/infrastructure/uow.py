@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from .repositories.inbox import InboxEvents

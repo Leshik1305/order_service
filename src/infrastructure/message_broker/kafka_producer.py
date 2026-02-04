@@ -3,6 +3,7 @@ import json
 from aiokafka import AIOKafkaProducer
 
 from src.application.dtos.outbox import OutboxEventDTO
+
 from ..utils.serializer_for_json import default_serializer
 
 
@@ -12,6 +13,7 @@ class KafkaProducerService:
         self._producer: AIOKafkaProducer | None = None
 
     async def start(self):
+        """Инициализация и запуск Kafka Producer"""
         self._producer = AIOKafkaProducer(
             bootstrap_servers=self._bootstrap_servers,
             value_serializer=lambda v: json.dumps(v, default=default_serializer).encode(
@@ -22,10 +24,12 @@ class KafkaProducerService:
         await self._producer.start()
 
     async def stop(self):
+        """Остановка Kafka Producer"""
         if self._producer:
             await self._producer.stop()
 
     async def publish_event(self, topic: str, event: OutboxEventDTO):
+        """Публикация события"""
         if not self._producer:
             raise RuntimeError("KafkaProducerService is not started.")
 

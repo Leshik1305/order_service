@@ -1,12 +1,12 @@
 from datetime import datetime
+from uuid import UUID as PyUUID
 
-from sqlalchemy import UUID, Enum, JSON, DateTime, func
+from sqlalchemy import JSON, UUID, DateTime, Enum, func
 from sqlalchemy.orm import Mapped, mapped_column
-from uuid import UUID as PyUUID, uuid4
 
 from src.domain.value_objects.event_type import EventTypeEnum
 from src.domain.value_objects.inbox_event_status import InboxEventStatusEnum
-from src.infrastructure.db import Base
+from .base import Base
 
 
 class InboxEventORM(Base):

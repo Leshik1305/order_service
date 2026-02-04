@@ -1,19 +1,17 @@
 from decimal import Decimal
 from typing import Optional
-from uuid import UUID, uuid4, uuid5, NAMESPACE_DNS
+from uuid import NAMESPACE_DNS, UUID, uuid5
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.application.dtos.outbox import OutboxCreateDTO
 from src.application.dtos.order import OrderCreateDTO
-from src.application.exceptions import IdempotencyConflictError
+from src.application.dtos.outbox import OutboxCreateDTO
+from src.application.interfaces.repositories import OrdersProtocol
 from src.domain.value_objects.order_status import OrderStatusEnum
-from .outbox import OutboxEvents
+from src.domain.value_objects.event_type import EventTypeEnum
 from ..db.models.orders import OrderORM
-
-from ...application.interfaces.repositories import OrdersProtocol
-from ...domain.value_objects.event_type import EventTypeEnum
+from .outbox import OutboxEvents
 
 
 class Orders(OrdersProtocol):
@@ -22,6 +20,7 @@ class Orders(OrdersProtocol):
         self._outbox = outbox
 
     async def _create_outbox_event(self, order: OrderORM, event_suffix: str) -> None:
+        """Создание outbox event"""
         event_type = f"order.{event_suffix.lower()}"
         idempotency_key = uuid5(NAMESPACE_DNS, f"{order.id}: {event_type}")
 
@@ -39,6 +38,7 @@ class Orders(OrdersProtocol):
         await self._outbox.create(event=event_dto)
 
     async def create(self, order: OrderCreateDTO, amount: Decimal) -> OrderORM:
+        """Создание заказа"""
         new_order = OrderORM(
             item_id=order.item_id,
             user_id=order.user_id,
@@ -58,6 +58,7 @@ class Orders(OrdersProtocol):
         return new_order
 
     async def get_by_idempotency_key(self, idempotency_key: str) -> Optional[OrderORM]:
+        """Поиск по клю идемпотентности"""
         stmt = select(OrderORM).where(OrderORM.idempotency_key == idempotency_key)
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
@@ -65,6 +66,7 @@ class Orders(OrdersProtocol):
     async def update_status_with_outbox(
         self, order_id: UUID, status: OrderStatusEnum
     ) -> None:
+        """Обновление статуса outbox"""
         stmt = (
             update(OrderORM)
             .where(OrderORM.id == order_id)
@@ -76,11 +78,8 @@ class Orders(OrdersProtocol):
         if order:
             await self._create_outbox_event(order, status.value)
 
-    async def update_status(self, order_id: UUID, status: OrderStatusEnum) -> None:
-        stmt = update(OrderORM).where(OrderORM.id == order_id).values(status=status)
-        await self._session.execute(stmt)
-
     async def get_by_id(self, order_id: UUID) -> Optional[OrderORM]:
+        """Получение заказа по ID"""
         query = select(OrderORM).where(OrderORM.id == order_id)
         result = await self._session.execute(query)
         return result.scalar_one_or_none()

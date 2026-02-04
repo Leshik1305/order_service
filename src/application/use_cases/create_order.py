@@ -1,16 +1,16 @@
 import logging
 
 from src.domain.value_objects.order_status import OrderStatusEnum
+from src.infrastructure.http.catalog_service import CatalogServiceAPI
+from src.infrastructure.http.payments_service import PaymentsServiceAPI
+
 from ..dtos.order import OrderCreateDTO, OrderReadDTO
 from ..dtos.payment import PaymentCreateDTO
 from ..exceptions import (
     IsAvailableQtyError,
     PaymentCreationError,
 )
-
 from ..interfaces.uow import UnitOfWork
-from src.infrastructure.http.catalog_service import CatalogServiceAPI
-from src.infrastructure.http.payments_service import PaymentsServiceAPI
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +67,6 @@ class CreateOrder:
                     new_order_orm.id, OrderStatusEnum.CANCELLED
                 )
             except Exception as e:
-
                 logger.error(
                     f"Unexpected error during payment: {type(e).__name__}: {e}"
                 )

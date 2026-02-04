@@ -3,11 +3,9 @@ import typing
 
 from sqlalchemy import Engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import sessionmaker
 
-
-class Base(DeclarativeBase):
-    pass
+from .models.base import Base
 
 
 class Database:

@@ -1,9 +1,9 @@
-from uuid import NAMESPACE_DNS, uuid5, UUID
+from uuid import NAMESPACE_DNS, UUID, uuid5
 
+from ...domain.value_objects.order_status import OrderStatusEnum
 from ..dtos.inbox import InboxCreateDTO
 from ..exceptions import DuplicateEventError, ProcessInboxError
 from ..interfaces.uow import UnitOfWork
-from ...domain.value_objects.order_status import OrderStatusEnum
 
 
 class ProcessInboxEventsUseCase:

@@ -1,14 +1,10 @@
-from typing import Optional
-
-from sqlalchemy import insert, literal_column, update, select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.dtos.outbox import OutboxCreateDTO, OutboxEventDTO
-
-from src.infrastructure.db.models.outbox import OutboxEventORM
-
-from src.domain.value_objects.outbox_event_status import OutboxEventStatusEnum
 from src.application.interfaces.repositories import OutboxEventsProtocol
+from src.domain.value_objects.outbox_event_status import OutboxEventStatusEnum
+from ..db.models.outbox import OutboxEventORM
 
 
 class OutboxEvents(OutboxEventsProtocol):
@@ -16,6 +12,7 @@ class OutboxEvents(OutboxEventsProtocol):
         self._session = session
 
     async def create(self, event: OutboxCreateDTO) -> OutboxEventDTO:
+        """Создание события в outbox"""
         new_event = OutboxEventORM(
             event_type=event.event_type,
             payload=event.payload,
@@ -27,6 +24,7 @@ class OutboxEvents(OutboxEventsProtocol):
         return OutboxEventDTO.model_validate(new_event)
 
     async def get_pending_events(self, limit: int = 100) -> list[OutboxEventDTO]:
+        """Получение необработанных событий"""
         stmt = (
             select(OutboxEventORM)
             .where(OutboxEventORM.status == OutboxEventStatusEnum.PENDING)
@@ -38,24 +36,10 @@ class OutboxEvents(OutboxEventsProtocol):
         return [OutboxEventDTO.model_validate(event) for event in events]
 
     async def mark_as_sent(self, event_id: str) -> None:
+        """Изменение статуса событие на SENT"""
         stmt = (
             update(OutboxEventORM)
             .where(OutboxEventORM.id == event_id)
             .values(status=OutboxEventStatusEnum.SENT)
         )
         await self._session.execute(stmt)
-
-    @staticmethod
-    def _construct(row) -> Optional[OutboxEventDTO]:
-
-        if row is None:
-            return None
-
-        return OutboxEventDTO(
-            id=row.id,
-            event_type=row.event_type,
-            payload=row.payload,
-            status=OutboxEventStatusEnum(row.status),
-            created_at=row.created_at,
-            updated_at=row.updated_at,
-        )
