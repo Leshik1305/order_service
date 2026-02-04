@@ -28,4 +28,4 @@ COPY . .
 
 RUN uv sync --frozen --no-dev
 
-CMD ["uv", "run", "python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uv run alembic upgrade head && uv run python -m uvicorn src.main:app --host 0.0.0.0 --port 8000"]

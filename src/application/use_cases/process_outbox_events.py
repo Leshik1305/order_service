@@ -1,9 +1,9 @@
 import asyncio
 import logging
 
-from src.application.use_cases.send_notification import SendNotificationUseCase
 from src.infrastructure.message_broker.kafka_producer import KafkaProducerService
 from src.infrastructure.uow import UnitOfWork
+from .send_notification import SendNotificationUseCase
 
 logger = logging.getLogger(__name__)
 
