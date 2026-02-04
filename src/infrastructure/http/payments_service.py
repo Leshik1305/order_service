@@ -19,7 +19,7 @@ class PaymentsServiceAPI(PaymentsServiceAPIProtocol):
     ) -> Optional[PaymentReadDTO]:
         """Создание платежа"""
         url = f"{self._base_url}/api/payments"
-        cb_url = f"{self._callback_url}/orders/payment-callback"
+        cb_url = self._callback_url
         payload = {
             "order_id": str(payment.order_id),
             "amount": f"{payment.amount:.2f}",

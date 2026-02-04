@@ -2,19 +2,17 @@ import asyncio
 import os
 from logging.config import fileConfig
 
-from sqlalchemy import pool
+from sqlalchemy import pool, inspect, text
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-# Импортируйте ваш Base.metadata, чтобы Alembic видел модели
-# Замените 'src.infrastructure.database' на ваш реальный путь
+
 from src.infrastructure.db.models.base import Base
 
-# Это объект конфигурации Alembic
 config = context.config
 
-# Интерпретируем конфиг-файл для логирования
+
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
@@ -46,25 +44,32 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection):
-    # Проверяем, существует ли уже таблица из вашей первой миграции
-    # Замените 'users' или 'orders' на имя любой вашей реальной таблицы
-    from sqlalchemy import inspect
 
     inspector = inspect(connection)
-    tables = inspector.get_table_names()
+    existing_tables = inspector.get_table_names()
 
-    # Если таблицы уже есть, а таблицы alembic_version нет
-    if "orders" in tables and "alembic_version" not in tables:
-        # Маркируем базу как "уже на последней версии" без выполнения кода миграций
-        context.configure(connection=connection, target_metadata=target_metadata)
-        context.get_context()._stamp(context.get_current_revision(), "head")
-        print(
-            "Database tables already exist. Stamping head without running migrations."
+    if "orders" in existing_tables and "alembic_version" not in existing_tables:
+        print("INFO: База уже создана. Выполняю ручной stamp версии 19203a8c2b9e...")
+
+        connection.execute(
+            text(
+                "CREATE TABLE IF NOT EXISTS alembic_version ("
+                "version_num VARCHAR(32) NOT NULL, "
+                "CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num)"
+                ")"
+            )
         )
-        return  # Выходим, не запуская миграции, которые вызывают ошибку
+
+        current_rev = "19203a8c2b9e"
+        connection.execute(
+            text(f"INSERT INTO alembic_version (version_num) VALUES ('{current_rev}')")
+        )
+        print(f"INFO: База помечена ревизией {current_rev}. Пропускаю создание таблиц.")
+        return
 
     # Если всё чисто, запускаем миграции как обычно
     context.configure(connection=connection, target_metadata=target_metadata)
+
     with context.begin_transaction():
         context.run_migrations()
 
@@ -83,6 +88,7 @@ async def run_migrations_online() -> None:
     )
 
     async with connectable.connect() as connection:
+        # run_sync запускает синхронную функцию do_run_migrations в асинхронном контексте
         await connection.run_sync(do_run_migrations)
 
     await connectable.dispose()
@@ -91,4 +97,8 @@ async def run_migrations_online() -> None:
 if context.is_offline_mode():
     run_migrations_offline()
 else:
-    asyncio.run(run_migrations_online())
+    # Запуск асинхронного цикла
+    try:
+        asyncio.run(run_migrations_online())
+    except (KeyboardInterrupt, SystemExit):
+        pass
